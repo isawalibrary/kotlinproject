@@ -1,13 +1,18 @@
-
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
-
 fun main (){
     var thisChar = Character()
     thisChar.name = getName()
     println("Name: ${thisChar.name}")
     thisChar.clan = getClan()
-    println("Clan Ring: ${thisChar.clan.clanring}")
-    thisChar.family = getClanFamilies(thisChar.clan)
+
+    var clanname : String = run { thisChar.clan!!.clanname }
+
+    println("Clanname passed is $clanname")
+
+    var clanfamilies : MutableList<Family> = getClanFamilies( run {thisChar.clan!!.clanname})
+
+    thisChar.family = getFamily(clanfamilies)
+
+    println("Family selected is " + thisChar.family!!.familyname)
 }
 
 fun getName (): String {
@@ -19,24 +24,58 @@ fun getName (): String {
 fun getClan(): Clan {
     //selects Clan from input
     println ("Enter Clan Name")
-    var selectedClan = readLine()
+    var inputClan = readLine()
 
     var thisClan : Clan
 
-    when (selectedClan){
-        "Crab" -> thisClan = Clans.Crab
-        "Crane" -> thisClan = Clans.Crane
+    when (inputClan){
+        "Crab" -> thisClan = Clan.Crab
+        "Crane" -> thisClan = Clan.Crane
 
-        else -> thisClan = Clans.Crane
+        else -> thisClan = Clan.Crane
     }
-
     return thisClan
 }
 
-fun getClanFamilies(clan: Clan): Family {
+fun getClanFamilies (clan: String): MutableList<Family> {
 
+    var clanFamilies : MutableList<Family> = mutableListOf()
 
+    for (fam in Family.values() ){
+
+        var clan = clan.toString()
+
+        if (fam.clan == clan){
+            clanFamilies.add(fam)
+        }
+    }
+
+    println("Clanfamilies are $clanFamilies")
+
+    return clanFamilies
 }
+
+fun getFamily(clanfamilies: MutableList<Family>) : Family {
+
+    println("Select families from:")
+
+    for (each in clanfamilies){
+        println(each)
+    }
+
+    var inputFamily = readLine()
+
+    var selectedFamily : Family = Family.Hida
+
+    for (each in Family.values()) {
+        if (each.familyname == inputFamily) {
+            selectedFamily = each
+        }
+    }
+
+    return selectedFamily
+}
+
 
 
 
