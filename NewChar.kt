@@ -2,17 +2,22 @@ fun main (){
     var thisChar = Character()
     thisChar.name = getName()
     println("Name: ${thisChar.name}")
+    var clanlist : MutableList<String> = getClanList()
     thisChar.clan = getClan()
 
     var clanname : String = run { thisChar.clan!!.clanname }
-
-    println("Clanname passed is $clanname")
 
     var clanfamilies : MutableList<Family> = getClanFamilies( run {thisChar.clan!!.clanname})
 
     thisChar.family = getFamily(clanfamilies)
 
     println("Family selected is " + thisChar.family!!.familyname)
+
+    var clanschools : MutableList<School> = getClanSchools( run {thisChar.clan!!.clanname})
+
+    thisChar.school = getSchool(clanschools)
+
+    println("School selected is " + thisChar.school!!.schoolname)
 }
 
 fun getName (): String {
@@ -21,9 +26,20 @@ fun getName (): String {
     return getRandom(names)
 }
 
+fun getClanList(): MutableList<String> {
+
+    var clanList : MutableList<String> = mutableListOf()
+    println("Select clan from: ")
+
+    for (clan in Clan.values() ){
+        clanList.add(clan.clanname)
+        println(clan.clanname)
+    }
+    return clanList
+}
+
 fun getClan(): Clan {
     //selects Clan from input
-    println ("Enter Clan Name")
     var inputClan = readLine()
 
     var thisClan : Clan
@@ -50,14 +66,12 @@ fun getClanFamilies (clan: String): MutableList<Family> {
         }
     }
 
-    println("Clanfamilies are $clanFamilies")
-
     return clanFamilies
 }
 
 fun getFamily(clanfamilies: MutableList<Family>) : Family {
 
-    println("Select families from:")
+    println("Select family from:")
 
     for (each in clanfamilies){
         println(each)
@@ -76,6 +90,44 @@ fun getFamily(clanfamilies: MutableList<Family>) : Family {
     return selectedFamily
 }
 
+fun getClanSchools(clan : String) : MutableList<School> {
+    var clanSchools : MutableList<School> = mutableListOf()
 
+    for (school in School.values() ){
+
+        var clan = clan.toString()
+
+        if (school.clan == clan){
+            clanSchools.add(school)
+        }
+    }
+
+    return clanSchools
+}
+
+fun getSchool(clanschools: MutableList<School>) : School {
+
+    println("Select school from:")
+
+    for (each in clanschools){
+        for (school in School.values()) {
+            if (school == each) {
+                println(school.schoolname)
+            }
+        }
+    }
+
+    var inputSchool = readLine()
+
+    var selectedSchool : School = School.HidaDefender
+
+    for (each in School.values()) {
+        if (each.schoolname == inputSchool) {
+            selectedSchool = each
+        }
+    }
+
+    return selectedSchool
+}
 
 
