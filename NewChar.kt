@@ -1,23 +1,76 @@
-fun main (){
+import kotlin.reflect.full.memberProperties
+
+fun main () {
     var thisChar = Character()
     thisChar.name = getName()
     println("Name: ${thisChar.name}")
-    var clanlist : MutableList<String> = getClanList()
+
+    //set Clan, Family and School
+    var clanlist: MutableList<String> = getClanList()
     thisChar.clan = getClan()
-
-    var clanname : String = run { thisChar.clan!!.clanname }
-
-    var clanfamilies : MutableList<Family> = getClanFamilies( run {thisChar.clan!!.clanname})
-
+    var clanname: String = run { thisChar.clan!!.clanname }
+    var clanfamilies: MutableList<Family> = getClanFamilies(run { thisChar.clan!!.clanname })
     thisChar.family = getFamily(clanfamilies)
-
     println("Family selected is " + thisChar.family!!.familyname)
-
-    var clanschools : MutableList<School> = getClanSchools( run {thisChar.clan!!.clanname})
-
+    var clanschools: MutableList<School> = getClanSchools(run { thisChar.clan!!.clanname })
     thisChar.school = getSchool(clanschools)
-
     println("School selected is " + thisChar.school!!.schoolname)
+
+    //set Rings and Skills
+    var clanring: String = thisChar.clan!!.clanring
+    println("Clan ring is $clanring")
+    thisChar.rings = raiseRing(clanring,thisChar.rings)
+    println(thisChar.rings)
+    println("School rings are ${thisChar.school!!.schoolrings[0]} and ${thisChar.school!!.schoolrings[1]}")
+    var schoolRing1 = thisChar.school!!.schoolrings[0].toString()
+    var schoolRing2 = thisChar.school!!.schoolrings[1].toString()
+    thisChar.rings = raiseRing(schoolRing1, thisChar.rings)
+    thisChar.rings = raiseRing(schoolRing2, thisChar.rings)
+    println(thisChar.rings)
+    var family: Family = thisChar.family!!
+    var familyRing: String = getFamilyRing(family, thisChar.rings)
+    thisChar.rings = raiseRing(familyRing, thisChar.rings)
+    println(thisChar.rings)
+    println("Select one ring to raise")
+    var selectedRing = readLine().toString()
+    thisChar.rings = raiseRing(selectedRing,thisChar.rings)
+    var clanskill = thisChar.clan!!.clanskill
+    thisChar.skills = raiseSkill(clanskill,thisChar.skills)
+    println(thisChar.skills)
+    println("Family skills are ${thisChar.family!!.familyskills[0]} and ${thisChar.family!!.familyskills[1]}")
+    for (each in thisChar.family!!.familyskills){
+        thisChar.skills = raiseSkill(each, thisChar.skills)
+    }
+    println(thisChar.skills)
+    var skillnumber = thisChar.school!!.skillnumber
+    thisChar.skills = selectSchoolSkills(skillnumber,thisChar.school!!.schoolskills, thisChar.skills)
+    println(thisChar.skills)
+
+    //set starting Techniques
+
+    //set Honor, Status and Glory
+    thisChar.honor = thisChar.school!!.honor
+    println("Honor: ${thisChar.honor}")
+    thisChar.status = thisChar.clan!!.status
+    println("Status: ${thisChar.status}")
+    thisChar.glory = thisChar.family!!.glory
+    println("Glory: ${thisChar.glory}")
+
+    //Q7
+    thisChar = question7(thisChar)
+    println("Glory: ${thisChar.glory}")
+
+    //Q8
+    thisChar = question8(thisChar)
+    println("Honor: ${thisChar.honor}")
+
+    //Advantages and Disadvantages
+
+
+    //Q17
+    thisChar = question17(thisChar)
+    println(thisChar.skills)
+
 }
 
 fun getName (): String {
@@ -27,7 +80,6 @@ fun getName (): String {
 }
 
 fun getClanList(): MutableList<String> {
-
     var clanList : MutableList<String> = mutableListOf()
     println("Select clan from: ")
 
@@ -41,52 +93,49 @@ fun getClanList(): MutableList<String> {
 fun getClan(): Clan {
     //selects Clan from input
     var inputClan = readLine()
-
     var thisClan : Clan
 
     when (inputClan){
-        "Crab" -> thisClan = Clan.Crab
-        "Crane" -> thisClan = Clan.Crane
+        "Crab" -> thisClan = Clan.CrabClan
+        "Crane" -> thisClan = Clan.CraneClan
+        "Dragon" -> thisClan = Clan.DragonClan
+        "Lion" -> thisClan = Clan.LionClan
+        "Phoenix" -> thisClan = Clan.PhoenixClan
+        "Scorpion" -> thisClan = Clan.ScorpionClan
+        "Unicorn" -> thisClan = Clan.UnicornClan
 
-        else -> thisClan = Clan.Crane
+        else -> thisClan = Clan.CraneClan
     }
     return thisClan
 }
 
 fun getClanFamilies (clan: String): MutableList<Family> {
-
     var clanFamilies : MutableList<Family> = mutableListOf()
 
     for (fam in Family.values() ){
-
         var clan = clan.toString()
 
         if (fam.clan == clan){
             clanFamilies.add(fam)
         }
     }
-
     return clanFamilies
 }
 
 fun getFamily(clanfamilies: MutableList<Family>) : Family {
-
     println("Select family from:")
-
     for (each in clanfamilies){
-        println(each)
+        println(each.familyname)
     }
 
     var inputFamily = readLine()
-
-    var selectedFamily : Family = Family.Hida
+    var selectedFamily : Family = Family.HidaFamily
 
     for (each in Family.values()) {
         if (each.familyname == inputFamily) {
             selectedFamily = each
         }
     }
-
     return selectedFamily
 }
 
@@ -101,12 +150,10 @@ fun getClanSchools(clan : String) : MutableList<School> {
             clanSchools.add(school)
         }
     }
-
     return clanSchools
 }
 
 fun getSchool(clanschools: MutableList<School>) : School {
-
     println("Select school from:")
 
     for (each in clanschools){
@@ -116,9 +163,7 @@ fun getSchool(clanschools: MutableList<School>) : School {
             }
         }
     }
-
     var inputSchool = readLine()
-
     var selectedSchool : School = School.HidaDefender
 
     for (each in School.values()) {
@@ -126,8 +171,131 @@ fun getSchool(clanschools: MutableList<School>) : School {
             selectedSchool = each
         }
     }
-
     return selectedSchool
 }
 
+fun raiseRing (ring: String, ringset: MutableMap<String, Int>) : MutableMap<String, Int> {
+    for (each :MutableMap.MutableEntry<String, Int> in ringset){
+        if (ring == each.key){
+            each.setValue(each.value+1)
+        }
+    }
+    return ringset
+}
 
+fun getFamilyRing (family: Family, ringset: MutableMap<String, Int>) : String {
+    println("Family rings are:")
+
+    for (familyring in family.familyrings){
+        for (ring in ringset){
+            if (ring.key == familyring && ring.value > 2){
+                println("${ring.key} is already at 3")
+            }
+            else if (ring.key == familyring && ring.value <= 2){
+                println("${ring.key} can be raised")
+            }
+        }
+    }
+
+    println("Select family ring")
+    var selectedRing : String = readLine().toString()
+
+    return selectedRing
+}
+
+fun raiseSkill (skill: String, skillset: MutableMap<String, Int>) : MutableMap<String, Int> {
+    for (each in skillset){
+        if (each.key == skill){
+            each.setValue(each.value+1)
+        }
+    }
+    return skillset
+}
+
+fun selectSchoolSkills (skillnumber: Int, schoolskills: List<String>, skillset: MutableMap<String, Int>) : MutableMap<String, Int> {
+    println("Select $skillnumber skills from:")
+    for (each in schoolskills) {
+        println(each)
+    }
+
+    var raisedskillset = skillset
+
+    for (i in 1..skillnumber){
+        println("Select school skill #$i")
+        var selectedSkill = readLine().toString()
+        raisedskillset = raiseSkill(selectedSkill, raisedskillset)
+    }
+
+    return raisedskillset
+}
+
+fun question7 (character: Character) : Character {
+    println("Q7 What is your character's relationship with their clan?")
+    println("a) If your character believes firmly in the precepts of their clan and the values it holds dear,\n" +
+            "gain +5 glory based on their reputation as an upstanding member of their community.")
+    println("b) If your character has a fundamental disagreement with their clan’s beliefs, policies, or practices\n" +
+            "and has defied these in the past, gain a rank in a skill in which you have 0 ranks. Consider\n" +
+            "why this skill represents a divergence from the clan’s training or values.")
+    println("Select a or b")
+
+    var selection = readLine().toString()
+
+    if (selection == "a"){
+        character.glory = character.glory + 5
+    } else if (selection == "b"){
+        println("Select a skill from skills at zero to gain a rank in.")
+        for (each in character.skills){
+            if (each.value == 0){
+                println(each.key)
+            }
+        }
+        selection = readLine().toString()
+
+        character.skills = raiseSkill(selection,character.skills)
+        println(character.skills)
+    }
+    return character
+}
+
+fun question8 (character: Character) :Character {
+    println("Q7 What does your character think of Bushido?")
+    println("a) If your character’s belief in living by an orthodox interpretation of Bushidō is very staunch,\n" +
+            "gain +10 honor.")
+    println("b) If your character diverges from some or all common beliefs about how samurai should\n" +
+            "behave honorably, gain 1 rank in one of the following skills to reflect past behavior that was\n" +
+            "unbefitting of a samurai or deeply defied the norm: Commerce, Labor, Medicine, Seafaring,\n" +
+            "Skulduggery, or Survival.")
+    println("Select a or b")
+
+    var selection = readLine().toString()
+
+    if (selection == "a"){
+        character.honor = character.honor + 10
+    } else if (selection == "b"){
+        println("Select a skill from the following list to gain a rank in.")
+
+        var list = listOf<String>("Commerce", "Labor", "Medicine", "Seafaring", "Skulduggery", "Survival")
+        for (each in list){
+            println(each)
+        }
+        selection = readLine().toString()
+
+        character.skills = raiseSkill(selection,character.skills)
+        println(character.skills)
+    }
+    return character
+}
+
+fun question17 (character: Character) : Character {
+    println("Q17 How would your character's family members describe them?")
+    println("Gain a rank in a skill in which you have 0 ranks.")
+    for (each in character.skills){
+        if (each.value == 0){
+            println(each.key)
+        }
+    }
+    var selectedSkill = readLine().toString()
+
+    character.skills = raiseSkill(selectedSkill, character.skills)
+    return character
+}
